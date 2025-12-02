@@ -180,7 +180,7 @@ fs::path expand_tilde(fs::path path) {
   std::string s = path.u8string();
   if (s[0] == '~') {
     s = std::string{home} + s.substr(1, s.size() - 1);
-    return fs::path(s);
+    return fs::u8path(s);
   }
   return path;
 }
@@ -294,7 +294,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
   std::vector<fs::path> result;
 
   const auto pathname = inpath.u8string();
-  auto path = fs::path(pathname);
+  auto path = fs::u8path(pathname);
 
   if (pathname[0] == '~') {
     // expand tilde
@@ -322,7 +322,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
   }
 
   std::vector<fs::path> dirs{dirname};
-  if (dirname != fs::path(pathname) && has_magic(dirname.u8string())) {
+  if (dirname != fs::u8path(pathname) && has_magic(dirname.u8string())) {
     dirs = glob(dirname, recursive, true);
   }
 
