@@ -139,7 +139,7 @@ std::vector<fs::path> filter(const std::vector<fs::path> &names,
   std::vector<fs::path> result;
   std::copy_if(std::make_move_iterator(names.begin()), std::make_move_iterator(names.end()),
                std::back_inserter(result),
-               [&pattern_re](const fs::path& name) { return fnmatch(name.string(), pattern_re); });
+               [&pattern_re](const fs::path& name) { return fnmatch(name.u8string(), pattern_re); });
   return result;
 }
 
@@ -177,7 +177,7 @@ fs::path expand_tilde(fs::path path) {
       throw std::invalid_argument("error: Unable to expand `~` - HOME environment variable not set.");
   }
 
-  std::string s = path.string();
+  std::string s = path.u8string();
   if (s[0] == '~') {
     s = std::string{home} + s.substr(1, s.size() - 1);
     return fs::path(s);
@@ -229,7 +229,7 @@ std::vector<fs::path> rlistdir(const fs::path &dirname, bool dironly) {
   std::vector<fs::path> result;
   auto names = iter_directory(dirname, dironly);
   for (auto &&name : names) {
-    if (!is_hidden(name.string())) {
+    if (!is_hidden(name.u8string())) {
       result.push_back(name);
       auto matched_dirs = rlistdir(name, dironly);
       std::copy(std::make_move_iterator(matched_dirs.begin()), std::make_move_iterator(matched_dirs.end()), std::back_inserter(result));
@@ -248,7 +248,7 @@ std::vector<fs::path> glob2(const fs::path &dirname, [[maybe_unused]] const fs::
   if (fs::exists(dirname)) {
     result.push_back(".");
   }
-  assert(is_recursive(pattern.string()));
+  assert(is_recursive(pattern.u8string()));
   auto matched_dirs = rlistdir(dirname, dironly);
   std::copy(std::make_move_iterator(matched_dirs.begin()), std::make_move_iterator(matched_dirs.end()), std::back_inserter(result));
   return result;
@@ -264,7 +264,7 @@ std::vector<fs::path> glob1(const fs::path &dirname, const fs::path &pattern,
   std::vector<fs::path> filtered_names;
   auto names = iter_directory(dirname, dironly);
   for (auto &&name : names) {
-    if (!is_hidden(name.string())) {
+    if (!is_hidden(name.u8string())) {
       filtered_names.push_back(name.filename());
       // if (name.is_relative()) {
       //   // std::cout << "Filtered (Relative): " << name << "\n";
@@ -275,7 +275,7 @@ std::vector<fs::path> glob1(const fs::path &dirname, const fs::path &pattern,
       // }
     }
   }
-  return filter(filtered_names, pattern.string());
+  return filter(filtered_names, pattern.u8string());
 }
 
 std::vector<fs::path> glob0(const fs::path &dirname, const fs::path &basename,
@@ -293,7 +293,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
                            bool dironly = false) {
   std::vector<fs::path> result;
 
-  const auto pathname = inpath.string();
+  const auto pathname = inpath.u8string();
   auto path = fs::path(pathname);
 
   if (pathname[0] == '~') {
@@ -315,20 +315,20 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
   }
 
   if (dirname.empty()) {
-    if (recursive && is_recursive(basename.string())) {
+    if (recursive && is_recursive(basename.u8string())) {
       return glob2(dirname, basename, dironly);
     }
     return glob1(dirname, basename, dironly);
   }
 
   std::vector<fs::path> dirs{dirname};
-  if (dirname != fs::path(pathname) && has_magic(dirname.string())) {
+  if (dirname != fs::path(pathname) && has_magic(dirname.u8string())) {
     dirs = glob(dirname, recursive, true);
   }
 
   auto glob_in_dir = glob0;
-  if (has_magic(basename.string())) {
-    if (recursive && is_recursive(basename.string())) {
+  if (has_magic(basename.u8string())) {
+    if (recursive && is_recursive(basename.u8string())) {
       glob_in_dir = glob2;
     } else {
       glob_in_dir = glob1;
