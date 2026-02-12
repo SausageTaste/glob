@@ -351,7 +351,7 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
 } // namespace end
 
 std::vector<fs::path> glob(const std::string &pathname) {
-  return glob(pathname, false);
+  return glob(fs::u8path(pathname), false);
 }
 
 std::vector<fs::path> glob(const fs::path &pathname) {
@@ -359,7 +359,7 @@ std::vector<fs::path> glob(const fs::path &pathname) {
 }
 
 std::vector<fs::path> rglob(const std::string &pathname) {
-  return glob(pathname, true);
+  return glob(fs::u8path(pathname), true);
 }
 
 std::vector<fs::path> rglob(const fs::path &pathname) {
@@ -369,7 +369,7 @@ std::vector<fs::path> rglob(const fs::path &pathname) {
 std::vector<fs::path> glob(const std::vector<std::string> &pathnames) {
   std::vector<fs::path> result;
   for (const auto &pathname : pathnames) {
-    auto matched_res = glob(pathname, false);
+    auto matched_res = glob(fs::u8path(pathname), false);
     std::copy(std::make_move_iterator(matched_res.begin()), std::make_move_iterator(matched_res.end()), std::back_inserter(result));
   }
   return result;
@@ -387,7 +387,7 @@ std::vector<fs::path> glob(const std::vector<fs::path> &pathnames) {
 std::vector<fs::path> rglob(const std::vector<std::string> &pathnames) {
   std::vector<fs::path> result;
   for (const auto &pathname : pathnames) {
-    auto matched_res = glob(pathname, true);
+    auto matched_res = glob(fs::u8path(pathname), true);
     std::copy(std::make_move_iterator(matched_res.begin()), std::make_move_iterator(matched_res.end()), std::back_inserter(result));
   }
   return result;
