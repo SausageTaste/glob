@@ -350,12 +350,20 @@ std::vector<fs::path> glob(const fs::path &inpath, bool recursive = false,
 
 } // namespace end
 
+std::vector<fs::path> glob(const char *pathname) {
+  return glob(fs::u8path(pathname), false);
+}
+
 std::vector<fs::path> glob(const std::string &pathname) {
   return glob(fs::u8path(pathname), false);
 }
 
 std::vector<fs::path> glob(const fs::path &pathname) {
   return glob(pathname, false);
+}
+
+std::vector<fs::path> rglob(const char *pathname) {
+  return glob(fs::u8path(pathname), true);
 }
 
 std::vector<fs::path> rglob(const std::string &pathname) {

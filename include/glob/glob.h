@@ -23,6 +23,7 @@ namespace fs = std::filesystem;
 /// Pathnames can be absolute (/usr/src/Foo/Makefile) or relative (../../Tools/*/*.gif)
 /// Pathnames can contain shell-style wildcards
 /// Broken symlinks are included in the results (as in the shell)
+std::vector<fs::path> glob(const char *pathname);
 std::vector<fs::path> glob(const std::string &pathname);
 std::vector<fs::path> glob(const fs::path &pathname);
 
@@ -32,6 +33,7 @@ std::vector<fs::path> glob(const fs::path &pathname);
 /// Globs recursively.
 /// The pattern “**” will match any files and zero or more directories, subdirectories and
 /// symbolic links to directories.
+std::vector<fs::path> rglob(const char *pathname);
 std::vector<fs::path> rglob(const std::string &pathname);
 std::vector<fs::path> rglob(const fs::path &pathname);
 
